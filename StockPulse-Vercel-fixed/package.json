@@ -1,0 +1,22 @@
+{
+  "name": "stockpulse-pro",
+  "version": "1.0.0",
+  "description": "SIT StockPulse Pro — Real-Time NSE Stock Market Platform",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step needed'",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.4",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "vercel": "^34.0.0"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

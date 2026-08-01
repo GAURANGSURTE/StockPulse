@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SIT StockPulse Pro — Login</title>
+<meta name="description" content="Login to SIT StockPulse Pro — Real-time NSE stock market trading platform with AI predictions."/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg0:#03050c;--bg1:#07091a;--bg2:#0c1024;--b1:rgba(255,255,255,0.055);--b2:rgba(255,255,255,0.10);
+--t1:#dce8ff;--t2:#627494;--t3:#2e3d5a;--green:#00d48a;--red:#ff3355;--blue:#4488ff;--r:7px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg0);color:var(--t1);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;font-size:13px;
+  background-image:radial-gradient(ellipse at 20% 50%,rgba(68,136,255,0.07) 0%,transparent 50%),
+    radial-gradient(ellipse at 80% 20%,rgba(0,212,138,0.05) 0%,transparent 40%)}
+.card{width:400px;background:var(--bg1);border:1px solid var(--b2);border-radius:18px;overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,.8)}
+.card-top{padding:18px 22px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px}
+.dot{width:9px;height:9px;background:var(--green);border-radius:50%;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,212,138,.4)}50%{opacity:.5;box-shadow:0 0 0 5px rgba(0,212,138,0)}}
+.card-top h1{font-size:16px;font-weight:700}
+.card-top p{font-size:10px;color:var(--t3);margin-top:2px}
+.form{padding:24px 22px;display:flex;flex-direction:column;gap:14px}
+.form h2{font-size:15px;font-weight:700}
+.form > p{font-size:11px;color:var(--t2);margin-top:-8px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:10px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.field input{background:var(--bg2);border:1px solid var(--b1);border-radius:var(--r);color:var(--t1);
+  padding:9px 11px;font-size:13px;outline:none;transition:border .15s;width:100%}
+.field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(68,136,255,0.12)}
+.field input::placeholder{color:var(--t3)}
+.btn{padding:11px;border:none;border-radius:var(--r);background:linear-gradient(135deg,#4488ff,#6644ff);color:#fff;
+  font-size:13px;font-weight:700;cursor:pointer;width:100%;transition:all .2s;letter-spacing:.2px}
+.btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(68,136,255,0.35)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.alert{padding:9px 11px;border-radius:var(--r);font-size:12px;display:none}
+.alert.show{display:block}
+.alert-error{background:rgba(255,51,85,0.09);color:var(--red);border:1px solid rgba(255,51,85,0.22)}
+.alert-success{background:rgba(0,212,138,0.09);color:var(--green);border:1px solid rgba(0,212,138,0.22)}
+.hint{background:rgba(68,136,255,0.07);border:1px solid rgba(68,136,255,0.18);border-radius:var(--r);
+  padding:10px 12px;font-size:11px;color:var(--t2);text-align:center;line-height:1.7}
+.hint strong{color:var(--blue)}
+.link{text-align:center;font-size:12px;color:var(--t2)}
+.link a{color:var(--blue);text-decoration:none}
+.link a:hover{text-decoration:underline}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-top">
+    <div class="dot"></div>
+    <div>
+      <h1>SIT StockPulse Pro</h1>
+      <p>NSE · Live Charts · AI Predictions · Vercel + Neon</p>
+    </div>
+  </div>
+  <div class="form">
+    <div>
+      <h2>Welcome back</h2>
+      <p>Sign in to your trading account</p>
+    </div>
+
+    <div id="alertEl" class="alert"></div>
+
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Enter username" autofocus autocomplete="username"/>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter password" autocomplete="current-password"/>
+    </div>
+    <button class="btn" id="loginBtn" onclick="doLogin()">Sign In →</button>
+
+    <div class="hint">
+      Demo: <strong>demo / demo123</strong> &nbsp;·&nbsp; Admin: <strong>admin / admin123</strong><br>
+      ₹1,00,000 virtual capital · Live NSE simulation
+    </div>
+
+    <div class="link">
+      Don't have an account? <a href="/register">Register here</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Check if already logged in
+if (localStorage.getItem('sp_token')) {
+  try {
+    const u = JSON.parse(localStorage.getItem('sp_user') || '{}');
+    if (u.username) window.location.href = '/app';
+  } catch(e) {}
+}
+
+// Check URL params for messages
+const params = new URLSearchParams(window.location.search);
+if (params.get('logout'))      showAlert('You have been signed out successfully.', 'success');
+if (params.get('registered'))  showAlert('Account created! You can now sign in.', 'success');
+if (params.get('deleted'))     showAlert('Account deleted. Thank you for using StockPulse.', 'success');
+if (params.get('error'))       showAlert('Invalid username or password. Please try again.', 'error');
+
+function showAlert(msg, type) {
+  const el = document.getElementById('alertEl');
+  el.textContent = msg;
+  el.className = 'alert show alert-' + type;
+}
+
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('username').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('password').focus();
+});
+
+async function doLogin() {
+  const btn  = document.getElementById('loginBtn');
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value;
+
+  if (!user || !pass) { showAlert('Please enter username and password.', 'error'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Signing in…';
+
+  try {
+    const r = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: user, password: pass })
+    });
+    const data = await r.json();
+
+    if (data.success) {
+      localStorage.setItem('sp_token', data.token);
+      localStorage.setItem('sp_user', JSON.stringify(data.user));
+      window.location.href = '/app';
+    } else {
+      showAlert(data.message || 'Login failed. Please try again.', 'error');
+      btn.disabled = false;
+      btn.innerHTML = 'Sign In →';
+    }
+  } catch (err) {
+    showAlert('Network error. Please check your connection and try again.', 'error');
+    btn.disabled = false;
+    btn.innerHTML = 'Sign In →';
+  }
+}
+</script>
+</body>
+</html>
